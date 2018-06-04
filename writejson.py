@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import readjson
 
 
 #打开配置文件
@@ -14,12 +15,31 @@ def Write():
     openjsonfile=file("/etc/v2ray/config.json","w+")
     openjsonfile.writelines(myjsondump)
     openjsonfile.close()
-    
+
+def EnDynPort(en):
+    if en == 1:
+        config[u"inbound"][u"settings"].update({u"detour":{u"to":"dynamicPort"}})
+        dyn_port=file("/usr/local/v2ray.fun/json_template/dyn_port.json")
+        srtp=json.load(dyn_port)
+        config[u"inboundDetour"]=srtp
+        config[u"inboundDetour"][0][u"settings"][u"default"][u"alterId"]=int(readjson.ConfAlterId)
+    else:
+        config[u"inboundDetour"]=[]
+        if "detour" in config[u"inbound"][u"settings"]:
+            del config[u"inbound"][u"settings"][u"detour"]
+    Write()
+
 #更改UUID
 def WriteUUID(myuuid):
     config[u"inbound"][u"settings"][u"clients"][0][u"id"]=str(myuuid)
     Write()
-    
+
+
+#change alter ID
+def WriteAlterId(alterId):
+    config[u"inbound"][u"settings"][u"clients"][0][u"alterId"]=int(alterId)
+    Write()
+
 #更改端口
 def WritePort(myport):
     config[u"inbound"][u"port"]=int(myport)
